@@ -39,7 +39,7 @@ resource "google_compute_instance" "vm_instance" {
     access_config {}
   }
 
-  metadata_startup_script = var.instalacao_nginx
+  metadata_startup_script = file("${path.module}/startup.sh")
 }
 
 ###################################
