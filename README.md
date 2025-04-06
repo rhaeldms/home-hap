@@ -18,20 +18,21 @@ A estrutura de pastas foi projetada para manter o código organizado, modular e 
 ```bash
 home-hap/
 ├── ansible/                           # Configuração pós-provisionamento (Ansible)
+│   ├── roles/
+│   │   └── home_assistant/            # Role dedicada à instalação e configuração do Home Assistant
+│   │       └── tasks/
+│   │           └── main.yml           # Tarefas do Ansible para instalar Docker, Home Assistant e Nginx
+│   ├── gen_inventory.sh               # Script que gera o arquivo inventory.ini automaticamente
 │   ├── inventory.ini                  # (Será gerado automaticamente) Contém IP e SSH para acessar a VM
-│   ├── playbook.yml                   # Playbook principal que executa todas as tarefas de configuração
-│   └── roles/
-│       └── home_assistant/            # Role dedicada à instalação e configuração do Home Assistant
-│           └── tasks/
-│               └── main.yml           # Tarefas do Ansible para instalar Docker, Home Assistant e Nginx
+│   └── playbook.yml                   # Playbook principal que executa todas as tarefas de configuração
 ├── docs/                              # Arquivos Terraform para provisionamento da infraestrutura na GCP
 │   ├── diagrams                       # Diagramas visuais da arquitetura do projeto
 │   └── steps                          # Passo a passo completo para execução do projeto (Terraform + Ansible)
 ├── terraform/                         # Arquivos Terraform para provisionamento da infraestrutura na GCP
 │   ├── main.tf                        # Define os recursos principais (VM, IP, firewall, etc.)
-│   ├── variables.tf                   # Declaração de variáveis utilizadas no projeto
 │   ├── outputs.tf                     # Exibe IP, nome e zona da VM após criação
-│   └── startup.sh                     # Script de inicialização da VM com Docker, HA, Nginx e Mosquitto
+│   ├── startup.sh                     # Script de inicialização da VM com Docker, HA, Nginx e Mosquitto
+│   └── variables.tf                   # Declaração de variáveis utilizadas no projeto
 ├── README.md                          # Arquivo de instruções e documentação principal do projeto
 ```
 ## Instalar o Terraform
