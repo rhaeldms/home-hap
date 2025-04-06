@@ -1,0 +1,131 @@
+---
+# Tarefas para configurar a VM do projeto Home-Hap via Ansible
+
+- name: Atualizar pacotes do sistema
+  apt:
+    update_cache: yes
+    upgrade: dist
+  tags: atualizacao
+
+- name: Instalar pacotes essenciais
+  apt:
+    name:
+      - curl
+      - ca-certificates
+      - software-properties-common
+      - apt-transport-https
+      - gnupg
+      - nginx
+    state: present
+  tags: base
+
+- name: Instalar Docker (via script oficial)
+  shell: curl -fsSL https://get.docker.com | sh
+  args:
+    warn: false
+  tags: docker
+
+- name: Adicionar usuário atual ao grupo docker
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+  tags: docker
+
+- name: Instalar Docker Compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/v2.24.2/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+  tags: docker
+
+- name: Criar pastas para Home Assistant
+  file:
+    path: "/home/homeassistant/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - config
+    - volumes
+  tags: ha
+
+- name: Criar arquivo docker-compose.yml do Home Assistant
+  copy:
+    dest: /home/homeassistant/docker-compose.yml
+    content: |
+      version: "3.9"
+      services:
+        homeassistant:
+          container_name: homeassistant
+          image: ghcr.io/home-assistant/home-assistant:stable
+          volumes:
+            - /home/homeassistant/config:/config
+          network_mode: host
+          restart: unless-stopped
+  tags: ha
+
+- name: Subir container do Home Assistant
+  shell: docker compose -f /home/homeassistant/docker-compose.yml up -d
+  args:
+    chdir: /home/homeassistant
+  tags: ha
+
+- name: Habilitar e iniciar Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
+  tags: nginx
+
+- name: Criar configuração do Nginx para proxy reverso
+  copy:
+    dest: /etc/nginx/sites-available/homeassistant
+    content: |
+      server {
+          listen 80;
+          server_name home.seudominio.com;
+
+          location / {
+              proxy_pass http://localhost:8123;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          }
+      }
+  tags: nginx
+
+- name: Habilitar site do Home Assistant no Nginx
+  file:
+    src: /etc/nginx/sites-available/homeassistant
+    dest: /etc/nginx/sites-enabled/homeassistant
+    state: link
+  tags: nginx
+
+- name: Validar configuração do Nginx
+  command: nginx -t
+  register: nginx_test
+  failed_when: nginx_test.rc != 0
+  tags: nginx
+
+- name: Recarregar Nginx
+  service:
+    name: nginx
+    state: reloaded
+  tags: nginx
+
+- name: Instalar Mosquitto MQTT
+  apt:
+    name:
+      - mosquitto
+      - mosquitto-clients
+    state: present
+  tags: mqtt
+
+- name: Habilitar e iniciar Mosquitto
+  service:
+    name: mosquitto
+    state: started
+    enabled: true
+  tags: mqtt
