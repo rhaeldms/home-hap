@@ -1,0 +1,8 @@
+---
+- name: Configurar servidor Home-Hap
+  hosts: gcp
+  become: true
+  tasks:
+    - name: Incluir tarefas da role home_assistant
+      include_role:
+        name: home_assistant
