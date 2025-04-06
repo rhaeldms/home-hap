@@ -20,6 +20,11 @@ home-hap/
 ├── terraform/                         # Arquivos Terraform para provisionamento da infraestrutura na GCP
 │   ├── main.tf                        # Define os recursos principais (VM, IP, firewall, etc.)
 │   ├── variables.tf                   # Declaração de variáveis utilizadas no projeto
-│   ├── outputs.tf                     # Exporta informações úteis (como IP externo da VM)
+│   ├── outputs.tf                     # Exibe IP, nome e zona da VM após criação
+│   └── startup.sh                     # Script de inicialização da VM com Docker, HA, Nginx e Mosquitto
+├── ansible/                           # Configuração pós-provisionamento (Ansible)
+│   ├── inventory.ini                  # (Será gerado automaticamente) Contém IP e SSH para acessar a VM
+│   ├── playbook.yml                   # (A ser criado) Playbook principal do Ansible
+│   └── roles/
 ├── README.md                          # Arquivo de instruções e documentação principal do projeto
 ```
