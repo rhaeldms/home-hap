@@ -17,11 +17,6 @@ A estrutura de pastas foi projetada para manter o código organizado, modular e 
 
 ```bash
 home-hap/
-├── terraform/                         # Arquivos Terraform para provisionamento da infraestrutura na GCP
-│   ├── main.tf                        # Define os recursos principais (VM, IP, firewall, etc.)
-│   ├── variables.tf                   # Declaração de variáveis utilizadas no projeto
-│   ├── outputs.tf                     # Exibe IP, nome e zona da VM após criação
-│   └── startup.sh                     # Script de inicialização da VM com Docker, HA, Nginx e Mosquitto
 ├── ansible/                           # Configuração pós-provisionamento (Ansible)
 │   ├── inventory.ini                  # (Será gerado automaticamente) Contém IP e SSH para acessar a VM
 │   ├── playbook.yml                   # Playbook principal que executa todas as tarefas de configuração
@@ -29,6 +24,14 @@ home-hap/
 │       └── home_assistant/            # Role dedicada à instalação e configuração do Home Assistant
 │           └── tasks/
 │               └── main.yml           # Tarefas do Ansible para instalar Docker, Home Assistant e Nginx
+├── docs/                              # Arquivos Terraform para provisionamento da infraestrutura na GCP
+│   ├── steps                          # Passo a passo completo para execução do projeto (Terraform + Ansible)
+│   └── diagrams                       # Diagramas visuais da arquitetura do projeto
+├── terraform/                         # Arquivos Terraform para provisionamento da infraestrutura na GCP
+│   ├── main.tf                        # Define os recursos principais (VM, IP, firewall, etc.)
+│   ├── variables.tf                   # Declaração de variáveis utilizadas no projeto
+│   ├── outputs.tf                     # Exibe IP, nome e zona da VM após criação
+│   └── startup.sh                     # Script de inicialização da VM com Docker, HA, Nginx e Mosquitto
 ├── README.md                          # Arquivo de instruções e documentação principal do projeto
 ```
 ## Instalar o Terraform
